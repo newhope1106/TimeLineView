@@ -24,7 +24,7 @@ public class TimeLineDemo extends Activity{
     private ListAdapter mAdapter;
 
     private ArrayList<String> mData = new ArrayList<>();
-    private static final int COUNT = 10;
+    private static final int COUNT = 30;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,6 +107,9 @@ public class TimeLineDemo extends Activity{
                     break;
                 }
             }
+
+            /*调用下面强制绘制，否则会出现显示错位问题*/
+            timeLineView.invalidate();
 
             return convertView;
         }

@@ -30,8 +30,6 @@ public class TimeLineView extends View {
     private int mLineWidth;
     /**顶部时间球中心距离顶部的距离*/
     private int mBallCenterMarginTop;
-    /**底部时间球中心距离底部的距离*/
-    private int mBallCenterMarginBottom;
 
     private Rect mBounds;
     private Context mContext;
@@ -57,7 +55,6 @@ public class TimeLineView extends View {
         mBallSize = typedArray.getDimensionPixelSize(R.styleable.timeline_style_ballSize, 25);
         mLineWidth = typedArray.getDimensionPixelSize(R.styleable.timeline_style_lineWidth, 2);
         mBallCenterMarginTop = typedArray.getDimensionPixelSize(R.styleable.timeline_style_ballCenterMargin, 0);
-        mBallCenterMarginBottom = typedArray.getDimensionPixelSize(R.styleable.timeline_style_ballCenterMargin, 0);
         typedArray.recycle();
 
         /*没有设置drawable属性值，则采用缺省值*/
@@ -139,6 +136,7 @@ public class TimeLineView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
         if(mTopTimeBall != null) {
             mTopTimeBall.draw(canvas);
         }
@@ -183,13 +181,6 @@ public class TimeLineView extends View {
      * */
     public void setBallMarginTop(int top) {
         mBallCenterMarginTop = top;
-    }
-
-    /**
-     * 时间轴圆圈中心位于底部的距离
-     * */
-    public void setBallMarginBottom(int bottom) {
-        mBallCenterMarginBottom = bottom;
     }
 
     /**
