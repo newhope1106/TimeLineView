@@ -24,7 +24,7 @@ public class TimeLineDemo extends Activity{
     private ListAdapter mAdapter;
 
     private ArrayList<String> mData = new ArrayList<>();
-    private static final int COUNT = 30;
+    private static final int COUNT = 10;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

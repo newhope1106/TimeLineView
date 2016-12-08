@@ -78,19 +78,20 @@ public class TimeLineView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        //Width measurements of the width and height and the inside view of child controls
         int w = mBallSize + getPaddingLeft() + getPaddingRight();
         int h = mBallSize + getPaddingTop() + getPaddingBottom();
 
-        // Width and height to determine the final view through a systematic approach to decision-making
         int widthSize = resolveSizeAndState(w, widthMeasureSpec, 0);
         int heightSize = resolveSizeAndState(h, heightMeasureSpec, 0);
 
         setMeasuredDimension(widthSize, heightSize);
-        initDrawable();
+        initTimeLineView();
     }
 
-    private void initDrawable() {
+    /**
+     * 初始化时间轴控件的位置大小等
+     * */
+    private void initTimeLineView() {
         int paddingLeft = getPaddingLeft();
         int paddingRight = getPaddingRight();
         int paddingTop = getPaddingTop();
@@ -159,7 +160,7 @@ public class TimeLineView extends View {
      * */
     public void setTopTimeBallDrawable(Drawable ball) {
         mTopTimeBall = ball;
-        initDrawable();
+        initTimeLineView();
     }
 
     /**
@@ -167,20 +168,26 @@ public class TimeLineView extends View {
      * */
     public void setBottomTimeDrawable(Drawable ball) {
         mBottomTimeBall = ball;
+
+        initTimeLineView();
     }
 
     /**
-     * 时间轴圆圈大小
+     * 时间球大小
      * */
-    public void setMarkerSize(int ballSize) {
+    public void setTimeBallSize(int ballSize) {
         mBallSize = ballSize;
+
+        initTimeLineView();
     }
 
     /**
-     * 时间轴圆圈中心位于顶部的距离
+     * 时间球中心位于顶部的距离
      * */
     public void setBallMarginTop(int top) {
         mBallCenterMarginTop = top;
+
+        initTimeLineView();
     }
 
     /**
@@ -188,6 +195,8 @@ public class TimeLineView extends View {
      * */
     public void setLineWidth(int width) {
         mLineWidth = width;
+
+        initTimeLineView();
     }
 
     /**
