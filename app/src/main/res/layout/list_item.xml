@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="10dip"
+    android:paddingRight="10dip">
+    <cn.appleye.timelineview.TimeLineView
+        android:id="@+id/time_line"
+        android:layout_width="8dip"
+        android:layout_height="match_parent"
+        app:lineWidth="1dip"
+        app:ballSize="8dip"
+        app:ballCenterMargin="25dip"/>
+    <TextView
+        android:id="@+id/text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical|left"
+        android:layout_marginTop="15dip"
+        android:layout_marginBottom="15dip"
+        android:layout_marginLeft="10dip"
+        android:textSize="20sp"/>
+</LinearLayout>

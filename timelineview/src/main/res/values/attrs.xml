@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="timeline_style" >
-        <attr name="marker" format="color|reference"/>
+        <attr name="ball" format="color|reference"/>
         <attr name="line" format="color|reference"/>
-        <attr name="marker_size" format="dimension"/>
-        <attr name="line_size" format="dimension"/>
-        <attr name="marker_top" format="dimension"/>
+        <attr name="ballSize" format="dimension"/>
+        <attr name="lineWidth" format="dimension"/>
+        <attr name="ballCenterMargin" format="dimension"/>
     </declare-styleable>
 </resources>

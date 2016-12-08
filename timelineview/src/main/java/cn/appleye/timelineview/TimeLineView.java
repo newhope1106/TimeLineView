@@ -16,46 +16,65 @@ import android.view.View;
 
 public class TimeLineView extends View {
 
-    private Drawable mMarker;
-    private Drawable mBottomMarker;
+    /**顶部时间球*/
+    private Drawable mTopTimeBall;
+    /**底部时间球*/
+    private Drawable mBottomTimeBall;
+    /**顶部时间球到view的支线*/
     private Drawable mStartLine;
+    /**顶部时间球到底部的直线*/
     private Drawable mEndLine;
-    private int mMarkerSize;
-    private int mLineSize;
-    private int mMarkTop;//时间球位于顶部的距离
+    /**时间球大小*/
+    private int mBallSize;
+    /**直线宽度*/
+    private int mLineWidth;
+    /**顶部时间球中心距离顶部的距离*/
+    private int mBallCenterMarginTop;
+    /**底部时间球中心距离底部的距离*/
+    private int mBallCenterMarginBottom;
 
     private Rect mBounds;
     private Context mContext;
 
-    private boolean mIsFistView = false;
-    private boolean mIsLastView = false;
+    /**顶部直线是否可见*/
+    private boolean mIsTopLineVisible = false;
+    /**底部时间球是否可见*/
+    private boolean mIsBottomBallVisible = false;
 
     public TimeLineView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
         init(attrs);
-
-        setBackgroundColor(0xffb200);
-        setWillNotDraw(false);
     }
 
     private void init(AttributeSet attrs) {
+        /*获取xml中设置的属性值*/
         TypedArray typedArray = getContext().obtainStyledAttributes(attrs,R.styleable.timeline_style);
-        mMarker = typedArray.getDrawable(R.styleable.timeline_style_marker);
-        mBottomMarker = typedArray.getDrawable(R.styleable.timeline_style_marker);
+        mTopTimeBall = typedArray.getDrawable(R.styleable.timeline_style_ball);
+        mBottomTimeBall = typedArray.getDrawable(R.styleable.timeline_style_ball);
         mStartLine = typedArray.getDrawable(R.styleable.timeline_style_line);
         mEndLine = typedArray.getDrawable(R.styleable.timeline_style_line);
-        mMarkerSize = typedArray.getDimensionPixelSize(R.styleable.timeline_style_marker_size, 25);
-        mLineSize = typedArray.getDimensionPixelSize(R.styleable.timeline_style_line_size, 2);
-        mMarkTop = typedArray.getDimensionPixelSize(R.styleable.timeline_style_marker_top, 0);
+        mBallSize = typedArray.getDimensionPixelSize(R.styleable.timeline_style_ballSize, 25);
+        mLineWidth = typedArray.getDimensionPixelSize(R.styleable.timeline_style_lineWidth, 2);
+        mBallCenterMarginTop = typedArray.getDimensionPixelSize(R.styleable.timeline_style_ballCenterMargin, 0);
+        mBallCenterMarginBottom = typedArray.getDimensionPixelSize(R.styleable.timeline_style_ballCenterMargin, 0);
         typedArray.recycle();
 
-        if(mMarker == null) {
-            mMarker = mContext.getResources().getDrawable(R.drawable.marker);
+        /*没有设置drawable属性值，则采用缺省值*/
+        if(mTopTimeBall == null) {
+            mTopTimeBall = mContext.getResources().getDrawable(R.drawable.ball);
         }
 
-        if(mBottomMarker == null) {
-            mBottomMarker = mContext.getResources().getDrawable(R.drawable.marker);
+        if(mBottomTimeBall == null) {
+            mBottomTimeBall = mContext.getResources().getDrawable(R.drawable.ball);
+        }
+
+        if(mStartLine == null) {
+            mStartLine = mContext.getResources().getDrawable(R.drawable.time_line);
+        }
+
+        if(mEndLine == null) {
+            mEndLine = mContext.getResources().getDrawable(R.drawable.time_line);
         }
     }
 
@@ -63,8 +82,8 @@ public class TimeLineView extends View {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         //Width measurements of the width and height and the inside view of child controls
-        int w = mMarkerSize + getPaddingLeft() + getPaddingRight();
-        int h = mMarkerSize + getPaddingTop() + getPaddingBottom();
+        int w = mBallSize + getPaddingLeft() + getPaddingRight();
+        int h = mBallSize + getPaddingTop() + getPaddingBottom();
 
         // Width and height to determine the final view through a systematic approach to decision-making
         int widthSize = resolveSizeAndState(w, widthMeasureSpec, 0);
@@ -74,57 +93,57 @@ public class TimeLineView extends View {
         initDrawable();
     }
 
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-        // When the view is displayed when the callback
-        // Positioning Drawable coordinates, then draw
-        initDrawable();
-    }
-
     private void initDrawable() {
-        int pLeft = getPaddingLeft();
-        int pRight = getPaddingRight();
-        int pTop = getPaddingTop();
-        int pBottom = getPaddingBottom();
+        int paddingLeft = getPaddingLeft();
+        int paddingRight = getPaddingRight();
+        int paddingTop = getPaddingTop();
+        int paddingBottom = getPaddingBottom();
 
         int width = getWidth();// Width of current custom view
         int height = getHeight();
 
-        int cWidth = width - pLeft - pRight;// Circle width
-        int cHeight = height - pTop - pBottom;
+        /*有效的宽度*/
+        int effectWidth = width - paddingLeft - paddingRight;
+        /*有效高度*/
+        int effectHeight = height - paddingTop - paddingBottom;
 
-        int markSize = Math.min(mMarkerSize, Math.min(cWidth, cHeight));
+        /*时间球实际大小不能大于有效宽高度*/
+        int ballSize = Math.min(mBallSize, Math.min(effectWidth, effectHeight));
 
-        if(mMarker != null) {
-            mMarker.setBounds(pLeft, pTop + mMarkTop, pLeft + markSize, pTop + markSize + mMarkTop);
-            mBounds = mMarker.getBounds();
+        /*顶部时间球位置*/
+        if(mTopTimeBall != null) {
+            mTopTimeBall.setBounds(paddingLeft, paddingTop + mBallCenterMarginTop,
+                    paddingLeft + ballSize, paddingTop + ballSize + mBallCenterMarginTop);
+            mBounds = mTopTimeBall.getBounds();
+        } else {
+            mBounds = new Rect(paddingLeft, 0, paddingLeft + ballSize, 0);
         }
 
         int centerX = mBounds.centerX();
-        int lineLeft = centerX - (mLineSize >> 1);
+        int lineLeft = centerX - (mLineWidth >> 1);
 
-        if(!mIsFistView && mStartLine!=null) {
-            mStartLine.setBounds(lineLeft, 0, mLineSize + lineLeft, mBounds.top);
+        if(mIsTopLineVisible && mStartLine!=null) {
+            mStartLine.setBounds(lineLeft, 0, mLineWidth + lineLeft, mBounds.top);
         }
 
         if(mEndLine != null) {
-            mEndLine.setBounds(lineLeft, mBounds.bottom, mLineSize + lineLeft, height);
+            mEndLine.setBounds(lineLeft, mBounds.bottom, mLineWidth + lineLeft, height);
         }
 
-        if(mIsLastView && mBottomMarker != null){
-            mBottomMarker.setBounds(pLeft,height - pBottom - markSize,pLeft + markSize,pTop + height - pBottom);
+        if(mIsBottomBallVisible && mBottomTimeBall != null){
+            mBottomTimeBall.setBounds(paddingLeft,height - paddingBottom - ballSize,
+                    paddingLeft + ballSize, height - paddingBottom);
         }
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if(mMarker != null) {
-            mMarker.draw(canvas);
+        if(mTopTimeBall != null) {
+            mTopTimeBall.draw(canvas);
         }
 
-        if(!mIsFistView && mStartLine != null) {
+        if(mIsTopLineVisible && mStartLine != null) {
             mStartLine.draw(canvas);
         }
 
@@ -132,53 +151,65 @@ public class TimeLineView extends View {
             mEndLine.draw(canvas);
         }
 
-        if(mIsLastView && mBottomMarker != null) {
-            mBottomMarker.draw(canvas);
+        if(mIsBottomBallVisible && mBottomTimeBall != null) {
+            mBottomTimeBall.draw(canvas);
         }
     }
 
-    public void setMarker(Drawable marker) {
-        mMarker = marker;
+    /**
+     * 设置顶部时间球
+     * */
+    public void setTopTimeBallDrawable(Drawable ball) {
+        mTopTimeBall = ball;
         initDrawable();
+    }
+
+    /**
+     * 设置底部时间球
+     * */
+    public void setBottomTimeDrawable(Drawable ball) {
+        mBottomTimeBall = ball;
     }
 
     /**
      * 时间轴圆圈大小
      * */
-    public void setMarkerSize(int markerSize) {
-        mMarkerSize = markerSize;
+    public void setMarkerSize(int ballSize) {
+        mBallSize = ballSize;
     }
 
     /**
      * 时间轴圆圈中心位于顶部的距离
      * */
-    public void setMarkTop(int markTop) {
-        mMarkTop = markTop;
+    public void setBallMarginTop(int top) {
+        mBallCenterMarginTop = top;
+    }
+
+    /**
+     * 时间轴圆圈中心位于底部的距离
+     * */
+    public void setBallMarginBottom(int bottom) {
+        mBallCenterMarginBottom = bottom;
     }
 
     /**
      * 时间轴宽度
      * */
-    public void setLineSize(int lineSize) {
-        mLineSize = lineSize;
+    public void setLineWidth(int width) {
+        mLineWidth = width;
     }
 
     /**
-     * 时间轴第一个圆圈是否可见
+     * 顶部时间球是否可见
      * */
-    public void isFirstView(boolean isFirst) {
-        mIsFistView = isFirst;
+    public void setTopLineVisible(boolean visible) {
+        mIsTopLineVisible = visible;
     }
 
     /**
-     * 时间轴第二个(底部)圆圈是否可见
+     * 底部时间球是否可见
      * */
-    public void isLastView(boolean isLast) {
-        mIsLastView = isLast;
-    }
-
-    public void invalidateIfNeed() {
-        initDrawable();
-        invalidate();
+    public void setBottomBallVisible(boolean visible) {
+        mIsBottomBallVisible = visible;
     }
 }
